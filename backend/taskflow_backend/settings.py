@@ -38,9 +38,10 @@ INSTALLED_APPS = [
 
     # Third party apps
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'django_filters',
-    'rest_framework_simplejwt',
+    # 'rest_framework_simplejwt',
 
     # Local apps
     'tasks',

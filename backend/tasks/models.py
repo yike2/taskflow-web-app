@@ -73,5 +73,11 @@ class Task(models.Model):
             self.completed_at = None
         super().save(*args, **kwargs)
 
+    def is_overdue(self):
+        """Check if task is overdue"""
+        if self.due_date and self.status != 'completed':
+            return timezone.now() > self.due_date
+        return False
+
     def __str__(self):
         return self.title
