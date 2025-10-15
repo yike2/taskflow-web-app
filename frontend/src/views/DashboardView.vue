@@ -2,7 +2,7 @@
   <div class="dashboard">
     <div class="dashboard-header">
       <h1>Dashboard</h1>
-      <button class="btn-primary" @click="showAddTask = true">
+      <button class="btn-primary" @click="goToTasks">
         Add Task
       </button>
     </div>
@@ -29,6 +29,25 @@
       </div>
     </div>
 
+    <!-- 图表区域 -->
+    <div class="charts-section">
+      <div class="chart-card">
+        <TaskTrendChart />
+      </div>
+      
+      <div class="chart-card">
+        <TaskStatusChart 
+          :pending="stats.pending"
+          :in-progress="stats.inProgress"
+          :completed="stats.completed"
+        />
+      </div>
+      
+      <div class="chart-card">
+        <TaskPriorityChart :priority-data="priorityData" />
+      </div>
+    </div>
+
     <div class="content-section">
       <div class="section-header">
         <h2>Recent Tasks</h2>
@@ -39,7 +58,7 @@
       
       <div v-else-if="recentTasks.length === 0" class="empty-state">
         <p>No tasks yet.</p>
-        <button class="btn-secondary" @click="showAddTask = true">
+        <button class="btn-secondary" @click="goToTasks">
           Create your first task
         </button>
       </div>
@@ -82,13 +101,16 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/api'
+import TaskTrendChart from '@/components/charts/TaskTrendChart.vue'
+import TaskStatusChart from '@/components/charts/TaskStatusChart.vue'
+import TaskPriorityChart from '@/components/charts/TaskPriorityChart.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
 const loading = ref(false)
-const showAddTask = ref(false)
 const recentTasks = ref([])
+const priorityData = ref({})
 
 const stats = reactive({
   total: 0,
@@ -106,15 +128,22 @@ const loadDashboardData = async () => {
       api.get('/api/tasks/statistics/')
     ])
     
-    recentTasks.value = tasksResponse.data.slice(0, 5)
+    const tasksData = Array.isArray(tasksResponse.data) 
+      ? tasksResponse.data 
+      : (tasksResponse.data.results || [])
     
-    stats.total = statsResponse.data.total_tasks
-    stats.pending = statsResponse.data.pending_tasks
-    stats.inProgress = statsResponse.data.in_progress_tasks
-    stats.completed = statsResponse.data.completed_tasks
+    recentTasks.value = tasksData.slice(0, 5)
+    
+    stats.total = statsResponse.data.total_tasks || 0
+    stats.pending = statsResponse.data.pending_tasks || 0
+    stats.inProgress = statsResponse.data.in_progress_tasks || 0
+    stats.completed = statsResponse.data.completed_tasks || 0
+    
+    priorityData.value = statsResponse.data.tasks_by_priority || {}
     
   } catch (error) {
     console.error('Failed to load dashboard:', error)
+    recentTasks.value = []
   } finally {
     loading.value = false
   }
@@ -123,10 +152,15 @@ const loadDashboardData = async () => {
 const testConnection = async () => {
   try {
     const response = await api.get('/api/tasks/')
-    alert(`API works! Found ${response.data.length} tasks`)
+    const count = response.data.results?.length || response.data.length || 0
+    alert(`API works! Found ${count} tasks`)
   } catch (error) {
     alert('API error: ' + error.message)
   }
+}
+
+const goToTasks = () => {
+  router.push('/tasks')
 }
 
 const handleLogout = async () => {
@@ -184,6 +218,20 @@ onMounted(() => {
 .stat-label {
   font-size: 14px;
   color: #6b7280;
+}
+
+.charts-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.chart-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
 }
 
 .content-section {

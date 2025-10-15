@@ -65,6 +65,15 @@ class Task(models.Model):
     class Meta:
         ordering = ['-priority', 'due_date', '-created_at']
 
+        indexes = [
+            models.Index(fields=['user', 'status']),
+            models.Index(fields=['user', 'priority']),
+            models.Index(fields=['user', 'due_date']),
+            models.Index(fields=['user', 'category']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['status', 'due_date']),
+        ]
+
     def save(self, *args, **kwargs):
         """Auto-set completion time when task is marked as completed"""
         if self.status == 'completed' and not self.completed_at:
