@@ -1,0 +1,253 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    line-height: 1.6;
+}
+
+/* Custom Element Plus theme variables */
+:root {
+    --el-color-primary: #27ae60;
+    --el-color-success: #27ae60;
+    --el-color-warning: #e67e22;
+    --el-color-danger: #e74c3c;
+    --el-color-info: #95a5a6;
+    --el-border-radius-base: 6px;
+    --el-border-color-light: #e9ecef;
+    --el-bg-color: #ffffff;
+    --el-text-color-primary: #2c3e50;
+    --el-text-color-regular: #495057;
+}
+
+/* Application layout */
+.app-container {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+/* Header navigation */
+.app-header {
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+}
+
+.app-logo {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    text-decoration: none;
+}
+
+/* Main content area */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    min-height: calc(100vh - 64px);
+}
+
+/* Card components */
+.content-card {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.card-body {
+    padding: 20px 24px;
+}
+
+/* Custom button styles */
+.btn-primary {
+    background-color: #27ae60;
+    border-color: #27ae60;
+    color: white;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #219a52;
+    border-color: #219a52;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border-color: #e9ecef;
+    color: #6c757d;
+    border-radius: 6px;
+    padding: 8px 16px;
+}
+
+.btn-secondary:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* Form components */
+.form-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+.form-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 32px;
+}
+
+.form-item {
+    margin-bottom: 20px;
+}
+
+/* Task list styles */
+.task-item {
+    padding: 16px;
+    border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.2s;
+}
+
+.task-item:hover {
+    background-color: #f8f9fa;
+}
+
+.task-item:last-child {
+    border-bottom: none;
+}
+
+.task-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.task-description {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.task-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Status badge styles */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-progress {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-completed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Priority indicators */
+.priority-high {
+    color: #e74c3c;
+}
+
+.priority-medium {
+    color: #f39c12;
+}
+
+.priority-low {
+    color: #27ae60;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 16px;
+    }
+
+    .header-content {
+        padding: 0 16px;
+    }
+
+    .card-body {
+        padding: 16px 20px;
+    }
+
+    .form-container {
+        padding: 24px 16px;
+    }
+}
+
+/* Utility classes */
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+
+.mb-3 {
+    margin-bottom: 16px;
+}
+
+.mb-4 {
+    margin-bottom: 24px;
+}
+
+.mt-3 {
+    margin-top: 16px;
+}
+
+.mt-4 {
+    margin-top: 24px;
+}
