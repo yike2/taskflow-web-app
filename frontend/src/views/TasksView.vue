@@ -28,6 +28,16 @@
         </select>
       </div>
 
+      <div class="filter-group">
+        <label>Category:</label>
+        <select v-model="filters.category" @change="loadTasks">
+            <option value="">All</option>
+            <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+              {{ cat.name }}
+            </option>
+        </select>
+       </div>
+
       <div class="search-group">
         <input 
           v-model="searchQuery"
@@ -55,6 +65,7 @@
           <tr>
             <th>Title</th>
             <th>Status</th>
+            <th>Category</th>
             <th>Priority</th>
             <th>Due Date</th>
             <th>Actions</th>
@@ -75,6 +86,12 @@
                 {{ task.status_display }}
               </span>
             </td>
+            <td>
+                <span v-if="task.category_name" class="category-badge">
+                    {{ task.category_name }}
+                </span>
+                <span v-else class="no-category">-</span>
+                </td>
             <td>
               <span class="priority-badge" :class="`priority-${task.priority}`">
                 {{ task.priority_display }}
@@ -119,6 +136,15 @@
             <textarea v-model="newTask.description" rows="3"></textarea>
           </div>
 
+          <div class="form-group">
+            <label>Category</label>
+            <select v-model="newTask.category">
+              <option :value="null">No Category</option>
+              <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                {{ cat.name }}
+              </option>
+            </select>
+          </div>
           <div class="form-row">
             <div class="form-group">
               <label>Status</label>
@@ -223,10 +249,12 @@ const tasks = ref([])
 const showAddDialog = ref(false)
 const showEditDialog = ref(false)
 const searchQuery = ref('')
+const categories = ref([])
 
 const filters = reactive({
   status: '',
-  priority: ''
+  priority: '',
+  category: ''
 })
 
 const newTask = reactive({
@@ -234,6 +262,7 @@ const newTask = reactive({
   description: '',
   status: 'pending',
   priority: 2,
+  category: null,
   due_date: ''
 })
 
@@ -243,8 +272,18 @@ const editingTask = reactive({
   description: '',
   status: '',
   priority: 2,
+  category: null,
   due_date: ''
 })
+
+const loadCategories = async () => {
+  try {
+    const response = await api.get('/api/categories/')
+    categories.value = response.data.results || response.data || []
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+  }
+}
 
 const loadTasks = async () => {
   try {
@@ -253,13 +292,13 @@ const loadTasks = async () => {
     
     if (filters.status) params.append('status', filters.status)
     if (filters.priority) params.append('priority', filters.priority)
+    if (filters.category) params.append('category', filters.category)
     if (searchQuery.value) params.append('search', searchQuery.value)
     
     const response = await api.get(`/api/tasks/?${params}`)
     
     console.log('Tasks loaded:', response.data)
     
-    // 处理不同的响应格式
     if (response.data.results) {
       tasks.value = response.data.results
     } else if (Array.isArray(response.data)) {
@@ -375,6 +414,7 @@ const formatDate = (dateString) => {
 
 onMounted(() => {
   loadTasks()
+  loadCategories()
 })
 </script>
 
@@ -699,5 +739,20 @@ form {
 
 .btn-secondary:hover {
   background: #e5e7eb;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.no-category {
+  color: #9ca3af;
+  font-size: 14px;
 }
 </style>
