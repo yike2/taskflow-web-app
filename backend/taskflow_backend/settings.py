@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get(
     'SECRET_KEY', 'django-insecure-your-secret-key-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '.railway.app', '.vercel.app']
 
@@ -82,19 +82,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'taskflow_backend.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# Database Configuration
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'taskflow_db',
-        'USER': 'taskflow_user',
-        'PASSWORD': 'taskflow_password_2025',
-        'HOST': 'localhost',
-        'PORT': '5432',
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
     }
-}
+    print("✅ Using Railway PostgreSQL database")
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'taskflow_db',
+            'USER': 'taskflow_user',
+            'PASSWORD': 'taskflow_password_2025',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
+    print("Using local PostgreSQL database")
 
 # Custom user model
 AUTH_USER_MODEL = 'tasks.User'
@@ -255,12 +262,6 @@ import dj_database_url
 if not DEBUG:
     print("Running in PRODUCTION mode")
     
-    # Database
-    DATABASES['default'] = dj_database_url.parse(
-        os.environ.get('DATABASE_URL'),
-        conn_max_age=600
-    )
-    
     # Security Settings
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -273,12 +274,16 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
     
     # CORS
-    frontend_url = os.environ.get('FRONTEND_URL', '')
+    frontend_url = os.environ.get('FRONTEND_URL')
     if frontend_url:
         CORS_ALLOWED_ORIGINS = [frontend_url]
+        CORS_ALLOW_ALL_ORIGINS = False
         print(f"CORS allowed for: {frontend_url}")
+    else:
+        CORS_ALLOW_ALL_ORIGINS = True 
+        print("WARNING: CORS allows all origins")
 else:
-    print("🔧 Running in DEVELOPMENT mode")
+    print("Running in DEVELOPMENT mode")
 
 # Static files for production
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
