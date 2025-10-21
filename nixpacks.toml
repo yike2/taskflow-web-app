@@ -1,0 +1,19 @@
+[phases.setup]
+nixPkgs = ['python311', 'postgresql']
+
+[phases.install]
+dependsOn = ['setup']
+cmds = [
+  'cd backend',
+  'pip install -r requirements.txt'
+]
+
+[phases.build]
+dependsOn = ['install']
+cmds = [
+  'cd backend',
+  'python manage.py collectstatic --no-input'
+]
+
+[start]
+cmd = 'cd backend && python manage.py migrate && gunicorn taskflow_backend.wsgi:application --bind 0.0.0.0:$PORT'
