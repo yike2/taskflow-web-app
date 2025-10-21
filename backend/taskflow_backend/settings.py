@@ -28,8 +28,7 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1',
-                 '0.0.0.0', '.onrender.com', '.vercel.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '.railway.app', '.vercel.app']
 
 # Application definition
 INSTALLED_APPS = [
@@ -54,6 +53,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -249,16 +249,18 @@ LOGGING = {
 # Email configuration (for development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Production settings
+# Production Settings
+import dj_database_url
 
 if not DEBUG:
     print("Running in PRODUCTION mode")
-
+    
+    # Database
     DATABASES['default'] = dj_database_url.parse(
         os.environ.get('DATABASE_URL'),
         conn_max_age=600
     )
-
+    
     # Security Settings
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -269,7 +271,8 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_REDIRECT_EXEMPT = []
     X_FRAME_OPTIONS = 'DENY'
-
+    
+    # CORS
     frontend_url = os.environ.get('FRONTEND_URL', '')
     if frontend_url:
         CORS_ALLOWED_ORIGINS = [frontend_url]
@@ -279,4 +282,5 @@ else:
 
 # Static files for production
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = []
+STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
